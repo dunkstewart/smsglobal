@@ -50,16 +50,9 @@ module SmsGlobal
       end
     end
     
-    def stringify_keys(hash)
-      hash.keys.inject({}) do |new_hash, k| 
-        new_hash[k.to_s] = hash[k]
-        new_hash
-      end
-    end
-    
     def post
       url = URI.join(@base, 'http-api.php')
-      res = Net::HTTP.post_form url, stringify_keys(@params)
+      res = Net::HTTP.post_form url, @params
     end
   end
 end

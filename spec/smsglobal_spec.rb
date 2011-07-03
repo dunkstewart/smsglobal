@@ -35,8 +35,10 @@ describe 'SmsGlobal' do
       resp[:message].should == "Unable to reach SMSGlobal"
     end
     
-    it 'should format scheduledatetime' do
-      
+    it 'it formats dates' do
+      stub_sms_ok
+      @sender.send_text :text => 'xyz', :scheduledatetime => Time.now
+      @sender.instance_eval { @params[:scheduledatetime].kind_of? String }
     end
   end
 end
