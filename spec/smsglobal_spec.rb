@@ -8,13 +8,9 @@ describe 'SmsGlobal' do
       @sender = Sender.new :user => 'DUMMY', :password => 'DUMMY'
     end
 
-    it "requires :user and :password" do
-      lambda { Sender.new }.should raise_error
-    end
-
     it "sends SMS correctly" do
       stub_sms_ok
-      resp = @sender.send_text('Lorem Ipsum', '12341324', '1234')
+      resp = @sender.send_text :text => 'Lorem Ipsum', :to => '12341324', :from => '1234'
       resp[:status].should == :ok
       resp[:code].should == 0
       resp[:message].should == 'Sent queued message ID: 941596d028699601'
@@ -22,21 +18,25 @@ describe 'SmsGlobal' do
 
     it "gracefully fails" do
       stub_sms_failed
-      resp = @sender.send_text('Lorem Ipsum', '12341324', '1234')
+      resp = @sender.send_text :text => 'Lorem Ipsum', :to => '12341324', :from => '1234'
       resp[:status].should == :error
       resp[:message].should == 'Missing parameter: from'
     end
 
-    it "hits the right URL" do
-      stub_request(:get, 'http://www.smsglobal.com/http-api.php?action=sendsms&from=5678&password=DUMMY&text=xyz&to=1234&user=DUMMY').to_return(:body => 'ERROR: Missing parameter: from')
-      @sender.send_text('xyz', '1234', '5678')
+    it "posts the correct data" do
+      stub_sms_ok.with(:body => { :action => 'sendsms', :user => 'DUMMY', :password => 'DUMMY', :text => 'xyz', :to => '1234', :from => '5678' })
+      @sender.send_text :text => 'xyz', :to => '1234', :from => '5678'
     end
 
     it "gracefully fails on connection error" do
-      stub_request(:get, /www.smsglobal.com.*/).to_return(:status => [500, "Internal Server Error"])
-      resp = @sender.send_text('xyz', '1234', '5678')
+      stub_sms.to_return(:status => [500, "Internal Server Error"])
+      resp = @sender.send_text :text => 'xyz', :to => '1234', :from => '5678'
       resp[:status].should == :failed
       resp[:message].should == "Unable to reach SMSGlobal"
+    end
+    
+    it 'should format scheduledatetime' do
+      
     end
   end
 end

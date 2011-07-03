@@ -7,27 +7,14 @@ module SmsGlobal
 
     def initialize(options = {})
       @options = options
-      raise 'missing :user' unless @options[:user]
-      raise 'missing :password' unless @options[:password]
-      @base = @options[:base] || 'http://www.smsglobal.com/'
+      @base = options.delete(:base) || 'http://www.smsglobal.com/'
     end
 
-    def send_text(text, to, sender = nil, send_at = nil)
-      from = sender || @options[:from] || raise_error('sender is required')
-      params = {
-        :action => 'sendsms',
-        :user => @options[:user],
-        :password => @options[:password],
-        :from => from,
-        :to => to,
-        :text => text
-      }
-      if send_at
-        params[:scheduledatetime] = send_at.strftime('%Y-%m-%d %h:%M:%S')
-      end
-      params[:maxsplit] = @options[:maxsplit] if @options[:maxsplit]
+    def send_text(request)
+      @params = { :action => 'sendsms' }.merge(@options).merge(request)
+      format_datetimes(:scheduledatetime)
 
-      resp = get(params)
+      resp = post
 
       case resp
       when Net::HTTPSuccess
@@ -55,18 +42,24 @@ module SmsGlobal
       end
     end
 
-    private
+  private
     
-    def get(params = nil)
-      url = URI.join(@base, 'http-api.php')
-      if params
-        url.query = params.map { |k,v| "%s=%s" % [URI.encode(k.to_s), URI.encode(v)] }.join("&")
-      end
-      res = HTTP.start(url.host, url.port) do |http|
-        http.get(url.request_uri)
+    def format_datetimes(*args)
+      args.each do |key|
+        @params[key] = @params[key].strftime('%Y-%m-%d %h:%M:%S') if @params[key]
       end
     end
+    
+    def stringify_keys(hash)
+      hash.keys.inject({}) do |new_hash, k| 
+        new_hash[k.to_s] = hash[k]
+        new_hash
+      end
+    end
+    
+    def post
+      url = URI.join(@base, 'http-api.php')
+      res = Net::HTTP.post_form url, stringify_keys(@params)
+    end
   end
-
 end
-
