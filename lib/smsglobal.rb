@@ -4,9 +4,11 @@ require 'uri'
 module SmsGlobal
   class Sender
     include Net
+    
+    Options = {}
 
     def initialize(options = {})
-      @options = options
+      @options = Sender::Options.merge(options)
       @base = options.delete(:base) || 'http://www.smsglobal.com/'
     end
 
