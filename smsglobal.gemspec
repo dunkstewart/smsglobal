@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alex Cooper"]
-  s.date = %q{2011-07-03}
+  s.date = %q{2011-07-06}
   s.description = %q{Ruby gem to send and receive SMS messages via SMSGlobal.}
   s.email = %q{alex@kuperov.com}
   s.extra_rdoc_files = [
@@ -18,12 +18,16 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".document",
+    ".rspec",
+    ".rvmrc",
+    "Gemfile",
+    "Gemfile.lock",
     "LICENSE",
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "autotest/discover.rb",
     "lib/smsglobal.rb",
-    "smsglobal-0.1.0.gem",
     "smsglobal.gemspec",
     "spec/smsglobal_spec.rb",
     "spec/spec.opts",
@@ -40,16 +44,22 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<rspec>, [">= 0"])
+      s.add_development_dependency(%q<autotest>, [">= 0"])
       s.add_development_dependency(%q<webmock>, [">= 0"])
+      s.add_development_dependency(%q<ruby-debug>, [">= 0"])
     else
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 0"])
+      s.add_dependency(%q<autotest>, [">= 0"])
       s.add_dependency(%q<webmock>, [">= 0"])
+      s.add_dependency(%q<ruby-debug>, [">= 0"])
     end
   else
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 0"])
+    s.add_dependency(%q<autotest>, [">= 0"])
     s.add_dependency(%q<webmock>, [">= 0"])
+    s.add_dependency(%q<ruby-debug>, [">= 0"])
   end
 end
 
